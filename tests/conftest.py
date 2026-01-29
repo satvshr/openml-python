@@ -323,14 +323,6 @@ def openml_docker_stack():
     
     subprocess.run(["docker", "compose", "down", "-v"], check=True)
 
-@pytest.fixture(scope="function", autouse=True)
-def reset_db_state():
-    # if sys.platform == "win32":
-    #         yield
-    #         return
-    subprocess.run(["docker", "compose", "restart", "database"], check=True)
-    subprocess.run(["docker", "compose", "up", "database-setup"], check=True)
-
 @pytest.fixture
 def static_cache_dir():
     return Path(__file__).parent / "files" 
