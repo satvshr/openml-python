@@ -74,7 +74,15 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install test dependencies and scikit-learn
+    - name: Checkout server-api and patch Docker path
+          if: runner.os == 'Linux'
+          shell: bash
+          run: |
+            git clone --depth 1 https://github.com/openml/server-api.git server-api
+            sed -i 's|\.\./server-api|./server-api|g' docker-compose.yml
+
+    - name: Install test dependencies, scikit-learn, and optional pandas
+      shell: bash
       run: |
         python -m pip install --upgrade pip
         pip install -e .[test] scikit-learn==${{ matrix.scikit-learn }}
