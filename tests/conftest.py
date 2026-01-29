@@ -300,12 +300,8 @@ def with_test_cache(test_files_directory, request):
     if tmp_cache.exists():
         shutil.rmtree(tmp_cache)
         
-# This starts the entire stack once for the whole test run
 @pytest.fixture(scope="session", autouse=True)
 def openml_docker_stack():
-    # if sys.platform == "win32":
-    #         yield
-    #         return
     subprocess.run(["docker", "compose", "up", "-d"], check=True)
     subprocess.run(["docker", "wait", "openml-test-setup-ci"], check=True)
     
@@ -313,9 +309,8 @@ def openml_docker_stack():
     start = time.time()
     while time.time() - start < timeout:
         try:
-            response = requests.get("http://localhost:9001/api/v2/")
-            if response.status_code in [200, 404, 405]:
-                break
+            requests.get("http://localhost:9001/api/v2/")
+            break
         except requests.exceptions.ConnectionError:
             time.sleep(1)
             

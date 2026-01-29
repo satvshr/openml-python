@@ -124,6 +124,25 @@ openml = ["*.txt", "*.md", "py.typed"]
 [tool.setuptools.dynamic]
 version = {attr = "openml.__version__.__version__"}
 
+# https://docs.pytest.org/en/7.2.x/reference/reference.html#ini-options-ref
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+minversion = "7.0"
+xfail_strict = true
+filterwarnings=[
+    "ignore:the matrix subclass:PendingDeprecationWarning"
+]
+markers = [
+  "server: anything that connects to a server",
+  "upload: anything that uploads to a server",
+  "production: any interaction with the production server",
+  "cache: anything that interacts with the (test) cache",
+]
+env = [
+    "OPENML_SERVER=http://localhost:9001/api/v2",
+    "OPENML_API_KEY=AD000000000000000000000000000000",
+]
+
 # https://github.com/charliermarsh/ruff
 [tool.ruff]
 target-version = "py310"
