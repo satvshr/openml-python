@@ -149,10 +149,5 @@ class TestHTTPClient(TestAPIBase):
         finally:
             # DELETE the task if it was created
             if task_id is not None:
-                try:
-                    del_response = self.http_client.delete(f"task/{task_id}")
-                    # optional: verify delete
-                    if del_response.status_code != 200:
-                        print(f"Warning: delete failed for task {task_id}")
-                except Exception as e:
-                    print(f"Warning: failed to delete task {task_id}: {e}")
+                del_response = self.http_client.delete(f"task/{task_id}")
+                self.assertEqual(del_response.status_code, 200)
