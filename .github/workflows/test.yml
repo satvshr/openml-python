@@ -146,10 +146,10 @@ jobs:
         pytest -n 4 --durations=20 --dist load -sv --reruns 5 --reruns-delay 1 -m "not uses_test_server"
 
     - name: Cleanup Docker setup
-          if: always()
-          shell: bash
-          run: |
-            rm -rf server-api
+      if: always()
+      shell: bash
+      run: |
+        rm -rf server-api
         git checkout docker-compose.yml
 
     - name: Check for files left behind by test
