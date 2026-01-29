@@ -82,12 +82,6 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Checkout server-api and patch Docker path
-      shell: bash
-      run: |
-        git clone --depth 1 https://github.com/openml/server-api.git server-api
-        sed -i 's|\.\./server-api|./server-api|g' docker-compose.yml
-
     - name: Install test dependencies, scikit-learn, and optional pandas
       shell: bash
       run: |
@@ -106,6 +100,12 @@ jobs:
         git_status=$(git status --porcelain -b)
         echo "BEFORE=$git_status" >> $GITHUB_ENV
         echo "Repository status before tests: $git_status"
+
+    - name: Checkout server-api and patch Docker path
+      shell: bash
+      run: |
+        git clone --depth 1 https://github.com/openml/server-api.git server-api
+        sed -i 's|\.\./server-api|./server-api|g' docker-compose.yml
 
     - name: Show installed dependencies
       run: python -m pip list
@@ -144,6 +144,13 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |  # we need a separate step because of the bash-specific if-statement in the previous one.
         pytest -n 4 --durations=20 --dist load -sv --reruns 5 --reruns-delay 1 -m "not uses_test_server"
+
+    - name: Cleanup Docker setup
+          if: always()
+          shell: bash
+          run: |
+            rm -rf server-api
+        git checkout docker-compose.yml
 
     - name: Check for files left behind by test
       if: matrix.os != 'windows-latest' && always()
