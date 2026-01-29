@@ -306,37 +306,29 @@ def openml_docker_stack():
     # if sys.platform == "win32":
     #         yield
     #         return
-    # 1. Start the containers defined in your final docker-compose.yml
     subprocess.run(["docker", "compose", "up", "-d"], check=True)
-    
-    # 2. Wait for the database setup worker to finish its tasks
-    # This ensures update.sh has finished before we hit the APIs
     subprocess.run(["docker", "wait", "openml-test-setup-ci"], check=True)
     
-    # 3. Quick health check: Wait for the Python API to respond on port 9001
-    timeout = 30
+    timeout = 10
     start = time.time()
     while time.time() - start < timeout:
         try:
-            if requests.get("http://localhost:9001/api/v2/").status_code == 200:
+            response = requests.get("http://localhost:9001/api/v2/")
+            if response.status_code in [200, 404, 405]:
                 break
         except requests.exceptions.ConnectionError:
             time.sleep(1)
             
-    yield # Tests run here
+    yield
     
-    # 4. Tear everything down after tests finish to keep the machine clean
     subprocess.run(["docker", "compose", "down", "-v"], check=True)
 
-# This resets the database state before every single test to prevent race conditions
 @pytest.fixture(scope="function", autouse=True)
 def reset_db_state():
     # if sys.platform == "win32":
     #         yield
     #         return
-    # Fast restart of the database container to return to the 'baked-in' state
     subprocess.run(["docker", "compose", "restart", "database"], check=True)
-    # Re-run the setup worker to ensure paths are still correct
     subprocess.run(["docker", "compose", "up", "database-setup"], check=True)
 
 @pytest.fixture
