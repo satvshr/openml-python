@@ -30,11 +30,27 @@ class CacheConfig:
 
 
 class Settings:
+    """Settings container that reads from openml.config on access."""
+
+    _instance: Settings | None = None
+
     def __init__(self) -> None:
         self.api_configs: dict[str, APIConfig] = {}
         self.connection = ConnectionConfig()
         self.cache = CacheConfig()
         self._initialized = False
+
+    @classmethod
+    def get(cls) -> Settings:
+        """Get settings singleton, creating on first access."""
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
+
+    @classmethod
+    def reset(cls) -> None:
+        """Reset the settings singleton. Useful for testing."""
+        cls._instance = None
 
     def get_api_config(self, version: str) -> APIConfig:
         """Get API config for a version, with lazy initialization from openml.config."""
@@ -52,11 +68,8 @@ class Settings:
         if self._initialized:
             return
 
-        # Import here to avoid circular import at module load time
-        import openml.config as legacy
+        import openml.config as legacy  # Import here to avoid circular
 
-        # Parse server URL to extract base components
-        # e.g., "https://www.openml.org/api/v1/xml" -> server="https://www.openml.org/"
         server_url = legacy.server
         if "/api" in server_url:
             server_base = server_url.rsplit("/api", 1)[0] + "/"
@@ -69,36 +82,13 @@ class Settings:
             api_key=legacy.apikey,
         )
 
-        # Sync connection settings from legacy config
+        # Sync connection- and cache- settings from legacy config
         self.connection = ConnectionConfig(
             retries=legacy.connection_n_retries,
             retry_policy=RetryPolicy(legacy.retry_policy),
         )
-
-        # Sync cache settings from legacy config
         self.cache = CacheConfig(
             dir=str(legacy._root_cache_directory),
         )
 
         self._initialized = True
-
-
-_settings = None
-
-
-def get_settings() -> Settings:
-    """Get settings singleton, creating on first access.
-
-    Settings are lazily initialized from openml.config when first accessed,
-    avoiding circular imports at module load time.
-    """
-    global _settings
-    if _settings is None:
-        _settings = Settings()
-    return _settings
-
-
-def reset_settings() -> None:
-    """Reset the settings singleton. Could be useful for testing."""
-    global _settings
-    _settings = None
