@@ -83,24 +83,6 @@ class Settings:
         self._initialized = True
 
 
-settings = Settings(
-    api=APISettings(
-        v1=APIConfig(
-            server="https://www.openml.org/",
-            base_url="api/v1/xml/",
-            api_key="...",
-        ),
-        v2=APIConfig(
-            server="http://127.0.0.1:8001/",
-            base_url="",
-            api_key="...",
-        ),
-    ),
-    connection=ConnectionConfig(),
-    cache=CacheConfig(),
-)
-
-
 _settings = None
 
 
