@@ -18,12 +18,6 @@ class APIConfig:
 
 
 @dataclass
-class APISettings:
-    v1: APIConfig
-    v2: APIConfig
-
-
-@dataclass
 class ConnectionConfig:
     retries: int = 3
     retry_policy: RetryPolicy = RetryPolicy.HUMAN
