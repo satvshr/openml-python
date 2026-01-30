@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from openml._api.clients import HTTPCache, HTTPClient
-from openml._api.config import get_settings
+from openml._api.config import Settings
 from openml._api.resources import (
     DatasetsV1,
     DatasetsV2,
@@ -26,7 +26,7 @@ class APIBackend:
 
 
 def build_backend(version: str, *, strict: bool) -> APIBackend:
-    settings = get_settings()
+    settings = Settings.get()
 
     # Get config for v1 (lazy init from openml.config)
     v1_config = settings.get_api_config("v1")
