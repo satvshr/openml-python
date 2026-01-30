@@ -99,3 +99,18 @@ settings = Settings(
     connection=ConnectionConfig(),
     cache=CacheConfig(),
 )
+
+
+_settings = None
+
+
+def get_settings() -> Settings:
+    """Get settings singleton, creating on first access.
+
+    Settings are lazily initialized from openml.config when first accessed,
+    avoiding circular imports at module load time.
+    """
+    global _settings
+    if _settings is None:
+        _settings = Settings()
+    return _settings
