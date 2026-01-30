@@ -18,9 +18,7 @@ if TYPE_CHECKING:
 
 
 class APIBackend:
-    def __init__(
-        self, *, datasets: DatasetsAPI | FallbackProxy, tasks: TasksAPI | FallbackProxy
-    ):
+    def __init__(self, *, datasets: DatasetsAPI | FallbackProxy, tasks: TasksAPI | FallbackProxy):
         self.datasets = datasets
         self.tasks = tasks
 

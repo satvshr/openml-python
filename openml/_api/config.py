@@ -75,10 +75,7 @@ class Settings:
         import openml.config as legacy
 
         server_url = legacy.server
-        if "/api" in server_url:
-            server_base = server_url.rsplit("/api", 1)[0] + "/"
-        else:
-            server_base = server_url
+        server_base = server_url.rsplit("/api", 1)[0] + "/" if "/api" in server_url else server_url
 
         self.api_configs["v1"] = APIConfig(
             server=server_base,
