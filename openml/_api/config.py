@@ -41,6 +41,9 @@ class Settings:
     connection: ConnectionConfig
     cache: CacheConfig
 
+    def get_api_config(self, version: str) -> APIConfig:
+        pass
+
 
 settings = Settings(
     api=APISettings(
