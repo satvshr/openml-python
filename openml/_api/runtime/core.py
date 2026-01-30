@@ -28,7 +28,11 @@ class APIBackend:
 def build_backend(version: str, *, strict: bool) -> APIBackend:
     settings = Settings.get()
 
-    # Get config for v1 (lazy init from openml.config)
+    # Get config for v1. On first access, this triggers lazy initialization
+    # from openml.config, reading the user's actual API key, server URL,
+    # cache directory, and retry settings. This avoids circular imports
+    # (openml.config is imported inside the method, not at module load time)
+    # and ensures we use the user's configured values rather than hardcoded defaults.
     v1_config = settings.get_api_config("v1")
 
     http_cache = HTTPCache(
@@ -54,7 +58,11 @@ def build_backend(version: str, *, strict: bool) -> APIBackend:
     if version == "v1":
         return v1
 
-    # V2 support - will raise NotImplementedError if v2 config not available
+    # V2 support. Currently v2 is not yet available,
+    # so get_api_config("v2") raises NotImplementedError. When v2 becomes available,
+    # its config will be added to Settings._init_from_legacy_config().
+    # In strict mode: propagate the error.
+    # In non-strict mode: silently fall back to v1 only.
     try:
         v2_config = settings.get_api_config("v2")
     except NotImplementedError:
