@@ -114,3 +114,9 @@ def get_settings() -> Settings:
     if _settings is None:
         _settings = Settings()
     return _settings
+
+
+def reset_settings() -> None:
+    """Reset the settings singleton. Could be useful for testing."""
+    global _settings
+    _settings = None
