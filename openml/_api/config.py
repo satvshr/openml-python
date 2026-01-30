@@ -68,7 +68,11 @@ class Settings:
         if self._initialized:
             return
 
-        import openml.config as legacy  # Import here to avoid circular
+        # Import here (not at module level) to avoid circular imports.
+        # We read from openml.config to integrate with the existing config system
+        # where users set their API key, server, cache directory, etc.
+        # This avoids duplicating those settings with hardcoded values.
+        import openml.config as legacy
 
         server_url = legacy.server
         if "/api" in server_url:
