@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from openml._api.clients import HTTPCache, HTTPClient
-from openml._api.config import settings
+from openml._api.config import get_settings
 from openml._api.resources import (
     DatasetsV1,
     DatasetsV2,
@@ -18,30 +18,29 @@ if TYPE_CHECKING:
 
 
 class APIBackend:
-    def __init__(self, *, datasets: DatasetsAPI | FallbackProxy, tasks: TasksAPI | FallbackProxy):
+    def __init__(
+        self, *, datasets: DatasetsAPI | FallbackProxy, tasks: TasksAPI | FallbackProxy
+    ):
         self.datasets = datasets
         self.tasks = tasks
 
 
 def build_backend(version: str, *, strict: bool) -> APIBackend:
+    settings = get_settings()
+
+    # Get config for v1 (lazy init from openml.config)
+    v1_config = settings.get_api_config("v1")
+
     http_cache = HTTPCache(
-        path=Path(settings.cache.dir),
+        path=Path(settings.cache.dir).expanduser(),
         ttl=settings.cache.ttl,
     )
+
     v1_http_client = HTTPClient(
-        server=settings.api.v1.server,
-        base_url=settings.api.v1.base_url,
-        api_key=settings.api.v1.api_key,
-        timeout=settings.api.v1.timeout,
-        retries=settings.connection.retries,
-        retry_policy=settings.connection.retry_policy,
-        cache=http_cache,
-    )
-    v2_http_client = HTTPClient(
-        server=settings.api.v2.server,
-        base_url=settings.api.v2.base_url,
-        api_key=settings.api.v2.api_key,
-        timeout=settings.api.v2.timeout,
+        server=v1_config.server,
+        base_url=v1_config.base_url,
+        api_key=v1_config.api_key,
+        timeout=v1_config.timeout,
         retries=settings.connection.retries,
         retry_policy=settings.connection.retry_policy,
         cache=http_cache,
