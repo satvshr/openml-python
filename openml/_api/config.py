@@ -29,14 +29,58 @@ class CacheConfig:
     ttl: int = 60 * 60 * 24 * 7  # one week
 
 
-@dataclass
 class Settings:
-    api: APISettings
-    connection: ConnectionConfig
-    cache: CacheConfig
+    def __init__(self) -> None:
+        self.api_configs: dict[str, APIConfig] = {}
+        self.connection = ConnectionConfig()
+        self.cache = CacheConfig()
+        self._initialized = False
 
     def get_api_config(self, version: str) -> APIConfig:
-        pass
+        """Get API config for a version, with lazy initialization from openml.config."""
+        if not self._initialized:
+            self._init_from_legacy_config()
+        if version not in self.api_configs:
+            raise NotImplementedError(
+                f"API {version} is not yet available. "
+                f"Supported versions: {list(self.api_configs.keys())}"
+            )
+        return self.api_configs[version]
+
+    def _init_from_legacy_config(self) -> None:
+        """Lazy init from openml.config to avoid circular imports."""
+        if self._initialized:
+            return
+
+        # Import here to avoid circular import at module load time
+        import openml.config as legacy
+
+        # Parse server URL to extract base components
+        # e.g., "https://www.openml.org/api/v1/xml" -> server="https://www.openml.org/"
+        server_url = legacy.server
+        if "/api" in server_url:
+            server_base = server_url.rsplit("/api", 1)[0] + "/"
+        else:
+            server_base = server_url
+
+        self.api_configs["v1"] = APIConfig(
+            server=server_base,
+            base_url="api/v1/xml/",
+            api_key=legacy.apikey,
+        )
+
+        # Sync connection settings from legacy config
+        self.connection = ConnectionConfig(
+            retries=legacy.connection_n_retries,
+            retry_policy=RetryPolicy(legacy.retry_policy),
+        )
+
+        # Sync cache settings from legacy config
+        self.cache = CacheConfig(
+            dir=str(legacy._root_cache_directory),
+        )
+
+        self._initialized = True
 
 
 settings = Settings(
