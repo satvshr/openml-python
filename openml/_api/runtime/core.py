@@ -54,6 +54,25 @@ def build_backend(version: str, *, strict: bool) -> APIBackend:
     if version == "v1":
         return v1
 
+    # V2 support - will raise NotImplementedError if v2 config not available
+    try:
+        v2_config = settings.get_api_config("v2")
+    except NotImplementedError:
+        if strict:
+            raise
+        # Non-strict mode: fall back to v1 only
+        return v1
+
+    v2_http_client = HTTPClient(
+        server=v2_config.server,
+        base_url=v2_config.base_url,
+        api_key=v2_config.api_key,
+        timeout=v2_config.timeout,
+        retries=settings.connection.retries,
+        retry_policy=settings.connection.retry_policy,
+        cache=http_cache,
+    )
+
     v2 = APIBackend(
         datasets=DatasetsV2(v2_http_client),
         tasks=TasksV2(v2_http_client),
