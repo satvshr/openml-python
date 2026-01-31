@@ -26,6 +26,8 @@ from __future__ import annotations
 import multiprocessing
 import sys
 
+import fasteners
+
 multiprocessing.set_start_method("spawn", force=True)
 
 from collections.abc import Iterator
@@ -300,23 +302,38 @@ def with_test_cache(test_files_directory, request):
     if tmp_cache.exists():
         shutil.rmtree(tmp_cache)
         
-@pytest.fixture(scope="session", autouse=True)
-def openml_docker_stack():
-    subprocess.run(["docker", "compose", "up", "-d"], check=True)
+def _is_server_responding():
+    """Check if the Docker API is already listening."""
+    try:
+        requests.get("http://localhost:9001/api/v2/", timeout=1)
+        return True
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        return False
+
+def _start_docker():
+    """Logic to spin up the containers and wait for initialization."""
+    subprocess.run(["docker", "compose", "up", "-d"], check=True, capture_output=True, text=True)
     subprocess.run(["docker", "wait", "openml-test-setup-ci"], check=True)
+
+@pytest.fixture(scope="session", autouse=True)
+def openml_docker_stack(tmp_path_factory, worker_id):
+    # For local development, single-process runs
+    if worker_id == "master":
+        _start_docker()
+        yield
+        subprocess.run(["docker", "compose", "down", "-v"], check=True)
+        return
+
+    # Case 2: Running in CI with multiple workers (xdist)
+    root_tmp_dir = tmp_path_factory.getbasetemp().parent
+    lock_file = root_tmp_dir / "docker_setup.lock"
     
-    timeout = 10
-    start = time.time()
-    while time.time() - start < timeout:
-        try:
-            requests.get("http://localhost:9001/api/v2/")
-            break
-        except requests.exceptions.ConnectionError:
-            time.sleep(1)
-            
+    lock = fasteners.InterProcessLock(str(lock_file))
+    with lock:
+        if not _is_server_responding():
+            _start_docker()
+
     yield
-    
-    subprocess.run(["docker", "compose", "down", "-v"], check=True)
 
 @pytest.fixture
 def static_cache_dir():
