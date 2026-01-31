@@ -138,10 +138,6 @@ markers = [
   "production: any interaction with the production server",
   "cache: anything that interacts with the (test) cache",
 ]
-env = [
-    "OPENML_SERVER=http://localhost:9001/api/v2",
-    "OPENML_API_KEY=AD000000000000000000000000000000",
-]
 
 # https://github.com/charliermarsh/ruff
 [tool.ruff]
