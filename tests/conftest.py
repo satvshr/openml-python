@@ -317,14 +317,14 @@ def _start_docker():
 
 @pytest.fixture(scope="session", autouse=True)
 def openml_docker_stack(tmp_path_factory, worker_id):
-    # For local development, single-process runs
+    # For local development with single worker
     if worker_id == "master":
         _start_docker()
         yield
         subprocess.run(["docker", "compose", "down", "-v"], check=True)
         return
 
-    # Case 2: Running in CI with multiple workers (xdist)
+    # For CI with multiple workers (xdist)
     root_tmp_dir = tmp_path_factory.getbasetemp().parent
     lock_file = root_tmp_dir / "docker_setup.lock"
     
