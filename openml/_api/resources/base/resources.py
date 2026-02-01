@@ -3,7 +3,8 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
-from openml._api.resources.base import ResourceAPI, ResourceType
+from openml._api.config import ResourceType
+from openml._api.resources.base import ResourceAPI
 
 if TYPE_CHECKING:
     from requests import Response

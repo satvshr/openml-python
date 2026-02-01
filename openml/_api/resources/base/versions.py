@@ -5,7 +5,8 @@ from typing import Any, cast
 
 import xmltodict
 
-from openml._api.resources.base import APIVersion, ResourceAPI, ResourceType
+from openml._api.config import APIVersion, ResourceType
+from openml._api.resources.base import ResourceAPI
 from openml.exceptions import (
     OpenMLNotAuthorizedError,
     OpenMLServerError,

@@ -1,7 +1,7 @@
 import pytest
 from openml.testing import TestAPIBase
 from openml._api.resources.base.versions import ResourceV1
-from openml._api.resources.base.resources import ResourceType
+from openml._api.config import ResourceType
 
 
 class TestResourceV1(TestAPIBase):
