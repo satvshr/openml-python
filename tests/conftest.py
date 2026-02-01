@@ -330,14 +330,9 @@ def openml_docker_stack(tmp_path_factory, worker_id):
     
     lock = fasteners.InterProcessLock(str(lock_file))
     with lock:
-        import socket
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result = sock.connect_ex(('localhost', 33060))
-        is_port_open = (result == 0)
-        sock.close()
+        if not _is_server_responding():
+            _start_docker()
 
-        if not is_port_open:
-             _start_docker()
     yield
 
 @pytest.fixture
