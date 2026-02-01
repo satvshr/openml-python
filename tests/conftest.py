@@ -338,6 +338,7 @@ def openml_docker_stack(tmp_path_factory, worker_id):
 
         if not is_port_open:
              _start_docker()
+    yield
 
 @pytest.fixture
 def static_cache_dir():
