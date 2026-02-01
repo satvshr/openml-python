@@ -91,15 +91,3 @@ def build_backend(version: str, *, strict: bool) -> APIBackend:
         datasets=FallbackProxy(DatasetsV2(v2_http_client), DatasetsV1(v1_http_client)),
         tasks=FallbackProxy(TasksV2(v2_http_client), TasksV1(v1_http_client)),
     )
-
-
-class APIContext:
-    def __init__(self) -> None:
-        self._backend = build_backend("v1", strict=False)
-
-    def set_version(self, version: str, *, strict: bool = False) -> None:
-        self._backend = build_backend(version=version, strict=strict)
-
-    @property
-    def backend(self) -> APIBackend:
-        return self._backend
