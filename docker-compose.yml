@@ -12,18 +12,17 @@ services:
       interval: 5s
       retries: 10
 
-  # SETUP WORKER
   database-setup:
     image: mysql
     container_name: "openml-test-setup-ci"
     volumes:
-      # You MUST save the update.sh content you shared earlier to this path
       - ./docker/update.sh:/database-update.sh
     command: /bin/sh -c "/database-update.sh"
     depends_on:
       database:
         condition: service_healthy
 
+# V1 API (PHP)
   php-api:
     image: "openml/php-rest-api:v1.2.2"
     container_name: "openml-php-api-ci"
