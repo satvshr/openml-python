@@ -1,5 +1,5 @@
 from __future__ import annotations
 
-from openml._api.runtime.core import APIBackend, build_backend
+from openml._api.runtime.core import APIBackend
 
-_backend: APIBackend = build_backend("v1", strict=False)
+_backend: APIBackend = APIBackend.build(version="v1", strict=False)

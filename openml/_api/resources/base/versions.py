@@ -14,7 +14,7 @@ from openml.exceptions import (
 )
 
 
-class ResourceV1(ResourceAPI):
+class ResourceV1API(ResourceAPI):
     api_version: APIVersion = APIVersion.V1
 
     def publish(self, path: str, files: Mapping[str, Any] | None) -> int:
@@ -138,7 +138,7 @@ class ResourceV1(ResourceAPI):
         raise ValueError("No ID found in upload response")
 
 
-class ResourceV2(ResourceAPI):
+class ResourceV2API(ResourceAPI):
     api_version: APIVersion = APIVersion.V2
 
     def publish(self, path: str, files: Mapping[str, Any] | None) -> int:  # noqa: ARG002
