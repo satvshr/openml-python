@@ -1,6 +1,6 @@
 import pytest
 from openml.testing import TestAPIBase
-from openml._api.resources.base.versions import ResourceV1API
+from openml._api import ResourceV1API
 from openml.enums import ResourceType
 
 

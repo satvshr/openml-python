@@ -16,7 +16,7 @@ from urllib.parse import urljoin
 import requests
 
 import openml
-from openml._api.clients import HTTPCache, HTTPClient
+from openml._api import HTTPCache, HTTPClient
 from openml.enums import RetryPolicy
 from openml.exceptions import OpenMLServerException
 from openml.tasks import TaskType
