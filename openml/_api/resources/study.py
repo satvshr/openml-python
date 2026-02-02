@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from openml._api.resources.base import ResourceV1API, ResourceV2API, StudyAPI
+from .base import ResourceV1API, ResourceV2API, StudyAPI
 
 
 class StudyV1API(ResourceV1API, StudyAPI):

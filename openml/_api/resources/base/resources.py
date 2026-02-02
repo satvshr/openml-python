@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from openml._api.resources.base import ResourceAPI
 from openml.enums import ResourceType
+
+from .base import ResourceAPI
 
 
 class DatasetAPI(ResourceAPI):

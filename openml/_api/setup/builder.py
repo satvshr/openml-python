@@ -5,12 +5,12 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from openml._api.clients import HTTPCache, HTTPClient, MinIOClient
-from openml._api.resources import API_REGISTRY, FallbackProxy
+from openml._api.resources import API_REGISTRY, FallbackProxy, ResourceAPI
 
 if TYPE_CHECKING:
-    from openml._api.resources.base import ResourceAPI
-    from openml._api.setup.config import Config
     from openml.enums import ResourceType
+
+    from .config import Config
 
 
 class APIBackendBuilder:

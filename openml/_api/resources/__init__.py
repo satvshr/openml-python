@@ -1,17 +1,17 @@
-from openml._api.resources._registry import API_REGISTRY
-from openml._api.resources.base.fallback import FallbackProxy
-from openml._api.resources.dataset import DatasetV1API, DatasetV2API
-from openml._api.resources.estimation_procedure import (
+from ._registry import API_REGISTRY
+from .base import FallbackProxy, ResourceAPI
+from .dataset import DatasetV1API, DatasetV2API
+from .estimation_procedure import (
     EstimationProcedureV1API,
     EstimationProcedureV2API,
 )
-from openml._api.resources.evaluation import EvaluationV1API, EvaluationV2API
-from openml._api.resources.evaluation_measure import EvaluationMeasureV1API, EvaluationMeasureV2API
-from openml._api.resources.flow import FlowV1API, FlowV2API
-from openml._api.resources.run import RunV1API, RunV2API
-from openml._api.resources.setup import SetupV1API, SetupV2API
-from openml._api.resources.study import StudyV1API, StudyV2API
-from openml._api.resources.task import TaskV1API, TaskV2API
+from .evaluation import EvaluationV1API, EvaluationV2API
+from .evaluation_measure import EvaluationMeasureV1API, EvaluationMeasureV2API
+from .flow import FlowV1API, FlowV2API
+from .run import RunV1API, RunV2API
+from .setup import SetupV1API, SetupV2API
+from .study import StudyV1API, StudyV2API
+from .task import TaskV1API, TaskV2API
 
 __all__ = [
     "API_REGISTRY",
@@ -26,6 +26,7 @@ __all__ = [
     "FallbackProxy",
     "FlowV1API",
     "FlowV2API",
+    "ResourceAPI",
     "RunV1API",
     "RunV2API",
     "SetupV1API",

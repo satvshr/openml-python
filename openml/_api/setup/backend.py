@@ -3,8 +3,8 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
-from openml._api.setup.builder import APIBackendBuilder
-from openml._api.setup.config import Config
+from .builder import APIBackendBuilder
+from .config import Config
 
 
 class APIBackend:

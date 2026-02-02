@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from openml._api.setup.utils import _resolve_default_cache_dir
 from openml.enums import APIVersion, RetryPolicy
+
+from ._utils import _resolve_default_cache_dir
 
 
 @dataclass
