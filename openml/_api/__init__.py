@@ -33,6 +33,7 @@ from .setup import (
     CacheConfig,
     Config,
     ConnectionConfig,
+    _backend,
 )
 
 __all__ = [
@@ -66,4 +67,5 @@ __all__ = [
     "StudyV2API",
     "TaskV1API",
     "TaskV2API",
+    "_backend",
 ]
