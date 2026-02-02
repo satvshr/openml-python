@@ -1,20 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from openml._api.config import ResourceType
 from openml._api.resources.base import ResourceAPI
-
-if TYPE_CHECKING:
-    from openml._api.clients import HTTPClient, MinIOClient
+from openml._api.resources.base.enums import ResourceType
 
 
 class DatasetAPI(ResourceAPI):
     resource_type: ResourceType = ResourceType.DATASET
-
-    def __init__(self, http: HTTPClient, minio: MinIOClient):
-        self._minio = minio
-        super().__init__(http)
 
 
 class TaskAPI(ResourceAPI):

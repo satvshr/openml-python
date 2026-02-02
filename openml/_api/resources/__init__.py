@@ -1,3 +1,4 @@
+from openml._api.resources._registry import API_REGISTRY
 from openml._api.resources.base.fallback import FallbackProxy
 from openml._api.resources.dataset import DatasetV1API, DatasetV2API
 from openml._api.resources.estimation_procedure import (
@@ -13,6 +14,7 @@ from openml._api.resources.study import StudyV1API, StudyV2API
 from openml._api.resources.task import TaskV1API, TaskV2API
 
 __all__ = [
+    "API_REGISTRY",
     "DatasetV1API",
     "DatasetV2API",
     "EstimationProcedureV1API",
