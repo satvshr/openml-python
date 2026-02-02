@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from openml._api.clients import HTTPClient, MinIOClient
-    from openml._api.resources.base.enums import APIVersion, ResourceType
+    from openml.enums import APIVersion, ResourceType
 
 
 class ResourceAPI(ABC):

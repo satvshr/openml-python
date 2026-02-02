@@ -17,7 +17,7 @@ import requests
 
 import openml
 from openml._api.clients import HTTPCache, HTTPClient
-from openml._api.resources.base.enums import RetryPolicy
+from openml.enums import RetryPolicy
 from openml.exceptions import OpenMLServerException
 from openml.tasks import TaskType
 

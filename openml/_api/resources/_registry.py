@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from openml._api.resources.base.enums import APIVersion, ResourceType
 from openml._api.resources.dataset import DatasetV1API, DatasetV2API
 from openml._api.resources.estimation_procedure import (
     EstimationProcedureV1API,
@@ -15,6 +14,7 @@ from openml._api.resources.run import RunV1API, RunV2API
 from openml._api.resources.setup import SetupV1API, SetupV2API
 from openml._api.resources.study import StudyV1API, StudyV2API
 from openml._api.resources.task import TaskV1API, TaskV2API
+from openml.enums import APIVersion, ResourceType
 
 if TYPE_CHECKING:
     from openml._api.resources.base import ResourceAPI

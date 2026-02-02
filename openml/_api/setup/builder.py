@@ -9,8 +9,8 @@ from openml._api.resources import API_REGISTRY, FallbackProxy
 
 if TYPE_CHECKING:
     from openml._api.resources.base import ResourceAPI
-    from openml._api.resources.base.enums import ResourceType
     from openml._api.setup.config import Config
+    from openml.enums import ResourceType
 
 
 class APIBackendBuilder:
