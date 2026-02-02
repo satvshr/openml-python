@@ -123,7 +123,7 @@ jobs:
           marks="not production and not uses_test_server"
         fi
 
-        pytest -n 0 --durations=20 --dist load -sv $codecov -o log_cli=true -m "$marks"
+        pytest -n 4 --durations=20 --dist load -sv $codecov -o log_cli=true -m "$marks"
 
     - name: Run tests on Ubuntu Production
       if: matrix.os == 'ubuntu-latest'
@@ -138,12 +138,12 @@ jobs:
           marks="production and not uses_test_server"
         fi
 
-        pytest -n 0 --durations=20 --dist load -sv $codecov -o log_cli=true -m "$marks"
+        pytest -n 4 --durations=20 --dist load -sv $codecov -o log_cli=true -m "$marks"
 
     - name: Run tests on Windows
       if: matrix.os == 'windows-latest'
       run: |  # we need a separate step because of the bash-specific if-statement in the previous one.
-        pytest -n 0 --durations=20 --dist load -sv --reruns 5 --reruns-delay 1 -m "not uses_test_server"
+        pytest -n 4 --durations=20 --dist load -sv --reruns 5 --reruns-delay 1 -m "not uses_test_server"
 
     - name: Cleanup Docker setup
       if: always()

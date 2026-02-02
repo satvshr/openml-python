@@ -317,6 +317,14 @@ def _start_docker():
 
 @pytest.fixture(scope="session", autouse=True)
 def openml_docker_stack(tmp_path_factory, worker_id):
+    # Skip Docker setup in CI on Windows given docker images are for Linux
+    is_ci = os.environ.get("CI") == "true"
+    is_windows = sys.platform == "win32" or os.name == "nt"
+
+    if is_ci and is_windows:
+        yield
+        return
+
     # For local development with single worker
     if worker_id == "master":
         _start_docker()
