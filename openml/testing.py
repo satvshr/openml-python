@@ -16,7 +16,7 @@ from urllib.parse import urljoin
 import requests
 
 import openml
-from openml._api import HTTPCache, HTTPClient
+from openml._api import HTTPCache, HTTPClient, MinIOClient
 from openml.enums import RetryPolicy
 from openml.exceptions import OpenMLServerException
 from openml.tasks import TaskType
@@ -317,6 +317,7 @@ class TestAPIBase(unittest.TestCase):
             retry_policy=self.retry_policy,
             cache=self.cache,
         )
+        self.minio_client = self._get_minio_client(path=Path(self.dir))
 
         if self.cache.path.exists():
             shutil.rmtree(self.cache.path)
@@ -354,6 +355,12 @@ class TestAPIBase(unittest.TestCase):
             retry_policy=retry_policy,
             cache=cache,
         )
+
+    def _get_minio_client(
+        self,
+        path: Path | None = None,
+    ) -> MinIOClient:
+        return MinIOClient(path=path)
 
     def _get_url(
         self,
