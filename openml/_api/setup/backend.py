@@ -71,5 +71,16 @@ class APIBackend:
 
     @classmethod
     def set_config_values(cls, config_dict: dict[str, Any]) -> None:
+        config = cls.get_instance()._config
+
         for key, value in config_dict.items():
-            cls.set_config_value(key, value)
+            keys = key.split(".")
+            parent = config
+            for k in keys[:-1]:
+                parent = parent[k] if isinstance(parent, dict) else getattr(parent, k)
+            if isinstance(parent, dict):
+                parent[keys[-1]] = value
+            else:
+                setattr(parent, keys[-1], value)
+
+        cls.set_config(config)
