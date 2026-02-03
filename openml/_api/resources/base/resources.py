@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from openml.enums import ResourceType
-from abc import abstractmethod
+
 from .base import ResourceAPI
 
 if TYPE_CHECKING:
@@ -19,6 +20,7 @@ class DatasetAPI(ResourceAPI):
 
 class TaskAPI(ResourceAPI):
     resource_type: ResourceType = ResourceType.TASK
+
     @abstractmethod
     def get(
         self,
@@ -56,6 +58,7 @@ class TaskAPI(ResourceAPI):
         pandas.DataFrame
         """
         ...
+
 
 class EvaluationMeasureAPI(ResourceAPI):
     resource_type: ResourceType = ResourceType.EVALUATION_MEASURE
