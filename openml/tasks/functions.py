@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any
 import pandas as pd
 
 import openml.utils
-from openml._api import api_context
 from openml._api.resources.task import TaskV1API, TaskV2API
 from openml.datasets import get_dataset
 
@@ -76,7 +75,7 @@ def list_tasks(  # noqa: PLR0913
         calculated for the associated dataset, some of these are also returned.
     """
     listing_call = partial(
-        api_context.backend.tasks.list,
+        openml._backend.task.list,
         task_type=task_type,
         tag=tag,
         data_tag=data_tag,
@@ -102,7 +101,7 @@ def get_tasks(
 ) -> list[OpenMLTask]:
     """Download tasks.
 
-    This function iterates :meth:`openml.tasks.get`.
+    This function iterates :meth:`openml.task.get`.
 
     Parameters
     ----------
@@ -170,7 +169,7 @@ def get_task(
     if not isinstance(task_id, int):
         raise TypeError(f"Task id should be integer, is {type(task_id)}")
 
-    task = api_context.backend.tasks.get(task_id)
+    task = openml._backend.task.get(task_id)
     dataset = get_dataset(task.dataset_id, **get_dataset_kwargs)
 
     if isinstance(task, (OpenMLClassificationTask, OpenMLLearningCurveTask)):
@@ -179,10 +178,10 @@ def get_task(
     if (
         download_splits
         and isinstance(task, OpenMLSupervisedTask)
-        and isinstance(api_context.backend.tasks, TaskV1API)
+        and isinstance(openml._backend.task, TaskV1API)
     ):
         task.download_split()
-    elif download_splits and isinstance(api_context.backend.tasks, TaskV2API):
+    elif download_splits and isinstance(openml._backend.task, TaskV2API):
         warnings.warn(
             "`download_splits` is not yet supported in the v2 API and will be ignored.",
             stacklevel=2,
