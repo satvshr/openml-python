@@ -20,7 +20,8 @@ from __future__ import annotations
 
 from . import (
     _api_calls,
-    config,
+    _config,
+    _legacy_config,
     datasets,
     evaluations,
     exceptions,
@@ -49,6 +50,8 @@ from .tasks import (
     OpenMLSupervisedTask,
     OpenMLTask,
 )
+
+config = _legacy_config.LegacyConfig
 
 
 def populate_cache(
@@ -111,6 +114,8 @@ __all__ = [
     "__version__",
     "_api_calls",
     "_backend",
+    "_config",
+    "_legacy_config",
     "config",
     "datasets",
     "evaluations",
