@@ -7,7 +7,7 @@ import math
 import random
 import time
 import xml
-from collections.abc import Mapping, Callable
+from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode, urljoin, urlparse
