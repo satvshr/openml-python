@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import timedelta
 
 from openml.enums import APIVersion, RetryPolicy
 
@@ -58,6 +59,6 @@ class Config:
     cache: CacheConfig = field(
         default_factory=lambda: CacheConfig(
             dir=str(_resolve_default_cache_dir()),
-            ttl=60 * 60 * 24 * 7,
+            ttl=int(timedelta(weeks=1).total_seconds()),
         )
     )
