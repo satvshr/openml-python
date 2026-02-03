@@ -110,6 +110,7 @@ class TestBase(unittest.TestCase):
         self.retry_policy = openml.config.retry_policy
         self.connection_n_retries = openml.config.connection_n_retries
         openml.config.set_retry_policy("robot", n_retries=20)
+        openml.config._sync_api_config()
 
     def use_production_server(self) -> None:
         """
@@ -119,6 +120,7 @@ class TestBase(unittest.TestCase):
         """
         openml.config.server = self.production_server
         openml.config.apikey = ""
+        openml.config._sync_api_config()
 
     def tearDown(self) -> None:
         """Tear down the test"""
@@ -132,6 +134,7 @@ class TestBase(unittest.TestCase):
 
         openml.config.connection_n_retries = self.connection_n_retries
         openml.config.retry_policy = self.retry_policy
+        openml.config._sync_api_config()
 
     @classmethod
     def _mark_entity_for_removal(
