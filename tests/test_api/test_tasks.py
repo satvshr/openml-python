@@ -6,7 +6,7 @@ import pytest
 import pandas as pd
 from openml._api.clients.http import HTTPClient
 from openml.testing import TestBase
-from openml._api.resources.tasks import TasksV1, TasksV2
+from openml._api.resources.task import TaskV1API, TaskV2API
 from openml.tasks.task import (
     OpenMLClassificationTask, 
     OpenMLRegressionTask, 
@@ -35,8 +35,8 @@ class TestTasksEndpoints(TestBase):
             delay_method=settings.connection.delay_method,
             delay_time=settings.connection.delay_time,
         )
-        self.v1_api = TasksV1(v1_http_client)
-        self.v2_api = TasksV2(v2_http_client)
+        self.v1_api = TaskV1API(v1_http_client)
+        self.v2_api = TaskV2API(v2_http_client)
 
     def _get_first_tid(self, task_type: TaskType) -> int:
         """Helper to find an existing task ID for a given type on the server."""

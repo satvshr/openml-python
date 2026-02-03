@@ -9,7 +9,7 @@ import pandas as pd
 
 import openml.utils
 from openml._api import api_context
-from openml._api.resources.tasks import TasksV1, TasksV2
+from openml._api.resources.task import TaskV1API, TaskV2API
 from openml.datasets import get_dataset
 
 from .task import (
@@ -179,10 +179,10 @@ def get_task(
     if (
         download_splits
         and isinstance(task, OpenMLSupervisedTask)
-        and isinstance(api_context.backend.tasks, TasksV1)
+        and isinstance(api_context.backend.tasks, TaskV1API)
     ):
         task.download_split()
-    elif download_splits and isinstance(api_context.backend.tasks, TasksV2):
+    elif download_splits and isinstance(api_context.backend.tasks, TaskV2API):
         warnings.warn(
             "`download_splits` is not yet supported in the v2 API and will be ignored.",
             stacklevel=2,
