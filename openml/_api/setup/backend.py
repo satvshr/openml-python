@@ -38,7 +38,7 @@ class APIBackend:
         instance._backend = APIBackendBuilder.build(config)
 
     @classmethod
-    def get_config_value(cls, key: str) -> Config:
+    def get_config_value(cls, key: str) -> Any:
         keys = key.split(".")
         config_value = cls.get_instance()._config
         for k in keys:
@@ -60,3 +60,16 @@ class APIBackend:
         else:
             setattr(parent, keys[-1], value)
         cls.set_config(config)
+
+    @classmethod
+    def get_config_values(cls, keys: list[str]) -> list[Any]:
+        values = []
+        for key in keys:
+            value = cls.get_config_value(key)
+            values.append(value)
+        return values
+
+    @classmethod
+    def set_config_values(cls, config_dict: dict[str, Any]) -> None:
+        for key, value in config_dict.items():
+            cls.set_config_value(key, value)
