@@ -11,10 +11,13 @@ import time
 import unittest
 from pathlib import Path
 from typing import ClassVar
+from urllib.parse import urljoin
 
 import requests
 
 import openml
+from openml._api import HTTPCache, HTTPClient, MinIOClient
+from openml.enums import RetryPolicy
 from openml.exceptions import OpenMLServerException
 from openml.tasks import TaskType
 
@@ -107,6 +110,7 @@ class TestBase(unittest.TestCase):
         self.retry_policy = openml.config.retry_policy
         self.connection_n_retries = openml.config.connection_n_retries
         openml.config.set_retry_policy("robot", n_retries=20)
+        openml.config._sync_api_config()
 
     def use_production_server(self) -> None:
         """
@@ -116,6 +120,7 @@ class TestBase(unittest.TestCase):
         """
         openml.config.server = self.production_server
         openml.config.apikey = ""
+        openml.config._sync_api_config()
 
     def tearDown(self) -> None:
         """Tear down the test"""
@@ -129,6 +134,7 @@ class TestBase(unittest.TestCase):
 
         openml.config.connection_n_retries = self.connection_n_retries
         openml.config.retry_policy = self.retry_policy
+        openml.config._sync_api_config()
 
     @classmethod
     def _mark_entity_for_removal(
@@ -274,6 +280,98 @@ class TestBase(unittest.TestCase):
                         assert isinstance(evaluation, float)
                         assert evaluation >= min_val
                         assert evaluation <= max_val
+
+
+class TestAPIBase(unittest.TestCase):
+    server: str
+    base_url: str
+    api_key: str
+    timeout_seconds: int
+    retries: int
+    retry_policy: RetryPolicy
+    dir: str
+    ttl: int
+    cache: HTTPCache
+    http_client: HTTPClient
+
+    def setUp(self) -> None:
+        self.server = "https://test.openml.org/"
+        self.base_url = "api/v1/xml"
+        self.api_key = "normaluser"
+        self.timeout_seconds = 10
+        self.retries = 3
+        self.retry_policy = RetryPolicy.HUMAN
+        self.dir = "test_cache"
+        self.ttl = 60 * 60 * 24 * 7
+
+        self.cache = self._get_http_cache(
+            path=Path(self.dir),
+            ttl=self.ttl,
+        )
+        self.http_client = self._get_http_client(
+            server=self.server,
+            base_url=self.base_url,
+            api_key=self.api_key,
+            timeout_seconds=self.timeout_seconds,
+            retries=self.retries,
+            retry_policy=self.retry_policy,
+            cache=self.cache,
+        )
+        self.minio_client = self._get_minio_client(path=Path(self.dir))
+
+        if self.cache.path.exists():
+            shutil.rmtree(self.cache.path)
+
+    def tearDown(self) -> None:
+        if self.cache.path.exists():
+            shutil.rmtree(self.cache.path)
+
+    def _get_http_cache(
+        self,
+        path: Path,
+        ttl: int,
+    ) -> HTTPCache:
+        return HTTPCache(
+            path=path,
+            ttl=ttl,
+        )
+
+    def _get_http_client(  # noqa: PLR0913
+        self,
+        server: str,
+        base_url: str,
+        api_key: str,
+        timeout_seconds: int,
+        retries: int,
+        retry_policy: RetryPolicy,
+        cache: HTTPCache | None = None,
+    ) -> HTTPClient:
+        return HTTPClient(
+            server=server,
+            base_url=base_url,
+            api_key=api_key,
+            timeout_seconds=timeout_seconds,
+            retries=retries,
+            retry_policy=retry_policy,
+            cache=cache,
+        )
+
+    def _get_minio_client(
+        self,
+        path: Path | None = None,
+    ) -> MinIOClient:
+        return MinIOClient(path=path)
+
+    def _get_url(
+        self,
+        server: str | None = None,
+        base_url: str | None = None,
+        path: str | None = None,
+    ) -> str:
+        server = server if server else self.server
+        base_url = base_url if base_url else self.base_url
+        path = path if path else ""
+        return urljoin(self.server, urljoin(self.base_url, path))
 
 
 def check_task_existence(
