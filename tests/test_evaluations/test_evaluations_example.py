@@ -2,14 +2,15 @@
 from __future__ import annotations
 
 import unittest
-import openml
+
+from openml.config import overwrite_config_context
 
 
 class TestEvaluationsExample(unittest.TestCase):
     def test_example_python_paper(self):
         # Example script which will appear in the upcoming OpenML-Python paper
         # This test ensures that the example will keep running!
-        with openml.config.overwrite_config_context(
+        with overwrite_config_context(
             {
                 "server": "https://www.openml.org/api/v1/xml",
                 "apikey": None,

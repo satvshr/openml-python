@@ -12,7 +12,7 @@ import platform
 
 import pytest
 
-import openml
+import openml.config
 import openml.testing
 from openml.testing import TestBase
 
