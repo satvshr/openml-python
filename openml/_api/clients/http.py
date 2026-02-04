@@ -116,7 +116,6 @@ class HTTPClient:
         server: str,
         base_url: str,
         api_key: str,
-        timeout_seconds: int,
         retries: int,
         retry_policy: RetryPolicy,
         cache: HTTPCache | None = None,
@@ -124,7 +123,6 @@ class HTTPClient:
         self.server = server
         self.base_url = base_url
         self.api_key = api_key
-        self.timeout_seconds = timeout_seconds
         self.retries = retries
         self.retry_policy = retry_policy
         self.cache = cache
@@ -284,7 +282,6 @@ class HTTPClient:
         params: Mapping[str, Any],
         data: Mapping[str, Any],
         headers: Mapping[str, str],
-        timeout: float | int,
         files: Mapping[str, Any] | None,
         **request_kwargs: Any,
     ) -> tuple[Response | None, Exception | None]:
@@ -298,7 +295,6 @@ class HTTPClient:
                 params=params,
                 data=data,
                 headers=headers,
-                timeout=timeout,
                 files=files,
                 **request_kwargs,
             )
@@ -346,7 +342,6 @@ class HTTPClient:
         headers = request_kwargs.pop("headers", {}).copy()
         headers.update(self.headers)
 
-        timeout = request_kwargs.pop("timeout", self.timeout_seconds)
         files = request_kwargs.pop("files", None)
 
         if use_cache and not reset_cache and self.cache is not None:
@@ -367,7 +362,6 @@ class HTTPClient:
                 params=params,
                 data=data,
                 headers=headers,
-                timeout=timeout,
                 files=files,
                 **request_kwargs,
             )
