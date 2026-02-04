@@ -171,7 +171,7 @@ class OpenMLTask(OpenMLBase):
                 pass
         except OSError:
             split_url = self.estimation_procedure["data_splits_url"]
-            self._http.download(url=str(split_url), file_name="datasplits.arff")
+            openml._backend.task.download(url=str(split_url), file_name="datasplits.arff")
 
     def download_split(self) -> OpenMLSplit:
         """Download the OpenML split for a given task."""
@@ -241,9 +241,7 @@ class OpenMLTask(OpenMLBase):
             Tag to attach to the task.
         """
         if self.task_id is None:
-            raise ValueError(
-                "Task does not have an ID. Please publish the task before tagging."
-            )
+            raise ValueError("Task does not have an ID. Please publish the task before tagging.")
         openml._backend.task.tag(self.task_id, tag)
 
     def remove_tag(self, tag: str) -> None:
@@ -259,6 +257,7 @@ class OpenMLTask(OpenMLBase):
                 "Dataset does not have an ID. Please publish the dataset before untagging."
             )
         openml._backend.task.untag(self.task_id, tag)
+
 
 class OpenMLSupervisedTask(OpenMLTask, ABC):
     """OpenML Supervised Classification object.
