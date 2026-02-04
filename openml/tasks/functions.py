@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any
 import pandas as pd
 
 import openml.utils
-from openml._api.resources.task import TaskV1API, TaskV2API
 from openml.datasets import get_dataset
 
 from .task import (
@@ -167,6 +166,8 @@ def get_task(
     -------
     task: OpenMLTask
     """
+    from openml._api.resources.task import TaskV1API, TaskV2API
+
     if not isinstance(task_id, int):
         raise TypeError(f"Task id should be integer, is {type(task_id)}")
 
