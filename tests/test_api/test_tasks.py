@@ -12,7 +12,7 @@ class TestTasksV1(TestAPIBase):
         super().setUp()
         self.resource = TaskV1API(self.http_client)
 
-    # @pytest.mark.uses_test_server()
+    @pytest.mark.uses_test_server()
     def test_list_tasks(self):
         """Verify V1 list endpoint returns a populated DataFrame."""
         tasks_df = self.resource.list(limit=5, offset=0)
@@ -20,7 +20,7 @@ class TestTasksV1(TestAPIBase):
         assert not tasks_df.empty
         assert "tid" in tasks_df.columns
 
-    # @pytest.mark.uses_test_server()
+    @pytest.mark.uses_test_server()
     def test_estimation_procedure_list(self):
         """Verify that estimation procedure list endpoint works."""
         procs = self.resource._get_estimation_procedure_list()
@@ -51,7 +51,7 @@ class TestTasksCombined(TestAPIBase):
             pytest.skip(f"No tasks of type {task_type} found on test server.")
         return int(tasks.iloc[0]["tid"])
 
-    # @pytest.mark.uses_test_server()
+    @pytest.mark.uses_test_server()
     def test_v2_get_task(self):
         """Verify that we can get a task from V2 API using a task ID found via V1."""
         tid = self._get_first_tid(TaskType.SUPERVISED_CLASSIFICATION)

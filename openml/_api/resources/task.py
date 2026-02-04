@@ -375,9 +375,9 @@ class TaskV2API(ResourceV2API, TaskAPI):
 
     def list(
         self,
-        limit: int,
-        offset: int,
-        task_type: TaskType | int | None = None,
-        **kwargs: Any,
+        limit: int,  # noqa: ARG002
+        offset: int,  # noqa: ARG002
+        task_type: TaskType | int | None = None,  # noqa: ARG002
+        **kwargs: Any,  # noqa: ARG002
     ) -> pd.DataFrame:
-        raise NotImplementedError(self._not_supported(method="list"))
+        raise self._not_supported(method="list")
