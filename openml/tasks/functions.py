@@ -140,6 +140,7 @@ def get_tasks(
     return tasks
 
 
+@openml.utils.thread_safe_if_oslo_installed
 def get_task(
     task_id: int,
     download_splits: bool = False,  # noqa: FBT002
@@ -241,7 +242,13 @@ def create_task(
     elif task_type == TaskType.SUPERVISED_REGRESSION:
         task_cls = OpenMLRegressionTask  # type: ignore
     else:
-        raise NotImplementedError(f"Task type {task_type:d} not supported.")
+        raise NotImplementedError(
+            f"Task type ID {task_type:d} is not supported. "
+            f"Supported task type IDs: {TaskType.SUPERVISED_CLASSIFICATION.value},"
+            f"{TaskType.SUPERVISED_REGRESSION.value}, "
+            f"{TaskType.CLUSTERING.value}, {TaskType.LEARNING_CURVE.value}. "
+            f"Please refer to the TaskType enum for valid task type identifiers."
+        )
 
     return task_cls(
         task_type_id=task_type,
@@ -270,4 +277,4 @@ def delete_task(task_id: int) -> bool:
     bool
         True if the deletion was successful. False otherwise.
     """
-    return openml.utils._delete_entity("task", task_id)
+    return openml._backend.task.delete(task_id)

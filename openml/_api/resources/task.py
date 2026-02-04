@@ -40,7 +40,7 @@ class TaskV1API(ResourceV1API, TaskAPI):
         if not isinstance(task_id, int):
             raise TypeError(f"Task id should be integer, is {type(task_id)}")
 
-        response = self._http.get(f"task/{task_id}")
+        response = self._http.get(f"task/{task_id}", use_cache=True)
         return self._create_task_from_xml(response.text)
 
     def _create_task_from_xml(self, xml: str) -> OpenMLTask:
@@ -330,7 +330,7 @@ class TaskV1API(ResourceV1API, TaskAPI):
 
 class TaskV2API(ResourceV2API, TaskAPI):
     def get(self, task_id: int) -> OpenMLTask:
-        response = self._http.get(f"tasks/{task_id}")
+        response = self._http.get(f"tasks/{task_id}", use_cache=True)
         return self._create_task_from_json(response.json())
 
     def _create_task_from_json(self, task_json: dict) -> OpenMLTask:
@@ -380,4 +380,4 @@ class TaskV2API(ResourceV2API, TaskAPI):
         task_type: TaskType | int | None = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        raise NotImplementedError("Task listing is not available in API v2 yet.")
+        raise NotImplementedError(self._not_supported(method="list"))

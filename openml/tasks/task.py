@@ -13,7 +13,6 @@ from typing_extensions import TypedDict
 
 import openml.config
 from openml import datasets
-from openml._api.resources.base import ResourceAPI
 from openml.base import OpenMLBase
 from openml.utils import _create_cache_directory_for_id
 
@@ -46,7 +45,7 @@ class _EstimationProcedure(TypedDict):
     data_splits_url: str | None
 
 
-class OpenMLTask(OpenMLBase, ResourceAPI):
+class OpenMLTask(OpenMLBase):
     """OpenML Task object.
 
     Parameters
@@ -219,6 +218,47 @@ class OpenMLTask(OpenMLBase, ResourceAPI):
         """Parse the id from the xml_response and assign it to self."""
         self.task_id = int(xml_response["oml:upload_task"]["oml:id"])
 
+    def publish(self) -> OpenMLTask:
+        """Publish this task to OpenML server.
+
+        Returns
+        -------
+        self : OpenMLTask
+        """
+        file_elements = self._get_file_elements()
+        if "description" not in file_elements:
+            file_elements["description"] = self._to_xml()
+        task_id = openml._backend.task.publish(path="task", files=file_elements)
+        self.task_id = task_id
+        return self
+
+    def push_tag(self, tag: str) -> None:
+        """Annotates this task with a tag on the server.
+
+        Parameters
+        ----------
+        tag : str
+            Tag to attach to the task.
+        """
+        if self.task_id is None:
+            raise ValueError(
+                "Task does not have an ID. Please publish the task before tagging."
+            )
+        openml._backend.task.tag(self.task_id, tag)
+
+    def remove_tag(self, tag: str) -> None:
+        """Removes a tag from this task on the server.
+
+        Parameters
+        ----------
+        tag : str
+            Tag to remove from the task.
+        """
+        if self.task_id is None:
+            raise ValueError(
+                "Dataset does not have an ID. Please publish the dataset before untagging."
+            )
+        openml._backend.task.untag(self.task_id, tag)
 
 class OpenMLSupervisedTask(OpenMLTask, ABC):
     """OpenML Supervised Classification object.
