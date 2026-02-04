@@ -238,6 +238,8 @@ class HTTPClient:
             raise OpenMLServerError(f"URI too long! ({url})")
 
         retry_raise_e: Exception | None = None
+        code: int | None = None
+        message: str = ""
 
         try:
             code, message = self._parse_exception_response(response)
