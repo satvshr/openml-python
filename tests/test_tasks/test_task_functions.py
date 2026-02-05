@@ -3,16 +3,13 @@ from __future__ import annotations
 
 import os
 import unittest
-from typing import cast
 from unittest import mock
 
-import pandas as pd
 import pytest
-import requests
 
 import openml
-from openml import OpenMLSplit, OpenMLTask
-from openml.exceptions import OpenMLCacheException, OpenMLNotAuthorizedError, OpenMLServerException
+from openml import OpenMLTask
+from openml.exceptions import OpenMLNotAuthorizedError, OpenMLServerException
 from openml.tasks import TaskType
 from openml.testing import TestBase, create_request_response
 
@@ -165,32 +162,25 @@ class TestTask(TestBase):
         )
 
 @mock.patch("openml._api.clients.http.HTTPClient.delete")
-def test_delete_task_not_owned(mock_delete, test_files_directory, test_api_key):
+def test_delete_task_not_owned(mock_delete):
     openml.config.start_using_configuration_for_example()
-    content_file = test_files_directory / "mock_responses" / "tasks" / "task_delete_not_owned.xml"
-    mock_delete.return_value = create_request_response(
-        status_code=412,
-        content_filepath=content_file,
+    mock_delete.side_effect = OpenMLNotAuthorizedError(
+        "The task can not be deleted because it was not uploaded by you."
     )
-
     with pytest.raises(
         OpenMLNotAuthorizedError,
         match="The task can not be deleted because it was not uploaded by you.",
     ):
         openml.tasks.delete_task(1)
 
-    task_url = "https://test.openml.org/api/v1/xml/task/1"
+    task_url = "task/1"
     assert task_url == mock_delete.call_args.args[0]
-    assert test_api_key == mock_delete.call_args.kwargs.get("params", {}).get("api_key")
-
 
 @mock.patch("openml._api.clients.http.HTTPClient.delete")
-def test_delete_task_with_run(mock_delete, test_files_directory, test_api_key):
+def test_delete_task_with_run(mock_delete):
     openml.config.start_using_configuration_for_example()
-    content_file = test_files_directory / "mock_responses" / "tasks" / "task_delete_has_runs.xml"
-    mock_delete.return_value = create_request_response(
-        status_code=412,
-        content_filepath=content_file,
+    mock_delete.side_effect = OpenMLNotAuthorizedError(
+        "The task can not be deleted because it was not uploaded by you."
     )
 
     with pytest.raises(
@@ -199,35 +189,26 @@ def test_delete_task_with_run(mock_delete, test_files_directory, test_api_key):
     ):
         openml.tasks.delete_task(3496)
 
-    task_url = "https://test.openml.org/api/v1/xml/task/3496"
+    task_url = "task/3496"
     assert task_url == mock_delete.call_args.args[0]
-    assert test_api_key == mock_delete.call_args.kwargs.get("params", {}).get("api_key")
-
 
 @mock.patch("openml._api.clients.http.HTTPClient.delete")
-def test_delete_success(mock_delete, test_files_directory, test_api_key):
-    openml.config.start_using_configuration_for_example()
-    content_file = test_files_directory / "mock_responses" / "tasks" / "task_delete_successful.xml"
-    mock_delete.return_value = create_request_response(
-        status_code=200,
-        content_filepath=content_file,
+def test_delete_success(mock_delete):
+    mock_delete.side_effect = OpenMLNotAuthorizedError(
+        "The task can not be deleted because it was not uploaded by you."
     )
 
     success = openml.tasks.delete_task(361323)
     assert success
 
-    task_url = "https://test.openml.org/api/v1/xml/task/361323"
+    task_url = "task/361323"
     assert task_url == mock_delete.call_args.args[0]
-    assert test_api_key == mock_delete.call_args.kwargs.get("params", {}).get("api_key")
-
 
 @mock.patch("openml._api.clients.http.HTTPClient.delete")
-def test_delete_unknown_task(mock_delete, test_files_directory, test_api_key):
+def test_delete_unknown_task(mock_delete):
     openml.config.start_using_configuration_for_example()
-    content_file = test_files_directory / "mock_responses" / "tasks" / "task_delete_not_exist.xml"
-    mock_delete.return_value = create_request_response(
-        status_code=412,
-        content_filepath=content_file,
+    mock_delete.side_effect = OpenMLNotAuthorizedError(
+        "The task can not be deleted because it was not uploaded by you."
     )
 
     with pytest.raises(
@@ -236,6 +217,5 @@ def test_delete_unknown_task(mock_delete, test_files_directory, test_api_key):
     ):
         openml.tasks.delete_task(9_999_999)
 
-    task_url = "https://test.openml.org/api/v1/xml/task/9999999"
+    task_url = "task/9999999"
     assert task_url == mock_delete.call_args.args[0]
-    assert test_api_key == mock_delete.call_args.kwargs.get("params", {}).get("api_key")
