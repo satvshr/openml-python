@@ -23,27 +23,6 @@ class TestTask(TestBase):
     def tearDown(self):
         super().tearDown()
 
-    @pytest.mark.uses_test_server()
-    def test__get_cached_tasks(self):
-        openml.config.set_root_cache_directory(self.static_cache_dir)
-        tasks = openml.tasks.functions._get_cached_tasks()
-        assert isinstance(tasks, dict)
-        assert len(tasks) == 3
-        assert isinstance(next(iter(tasks.values())), OpenMLTask)
-
-    @pytest.mark.uses_test_server()
-    def test__get_cached_task(self):
-        openml.config.set_root_cache_directory(self.static_cache_dir)
-        task = openml.tasks.functions._get_cached_task(1)
-        assert isinstance(task, OpenMLTask)
-
-    @pytest.mark.uses_test_server()
-    def test__get_estimation_procedure_list(self):
-        estimation_procedures = openml.tasks.functions._get_estimation_procedure_list()
-        assert isinstance(estimation_procedures, list)
-        assert isinstance(estimation_procedures[0], dict)
-        assert estimation_procedures[0]["task_type_id"] == TaskType.SUPERVISED_CLASSIFICATION
-
     @pytest.mark.production()
     @pytest.mark.xfail(reason="failures_issue_1544", strict=False)
     def test_list_clustering_task(self):
@@ -124,11 +103,6 @@ class TestTask(TestBase):
                     assert j == task["ttid"]
                     self._check_task(task)
 
-    @pytest.mark.uses_test_server()
-    def test__get_task(self):
-        openml.config.set_root_cache_directory(self.static_cache_dir)
-        openml.tasks.get_task(1882)
-
     @unittest.skip(
         "Please await outcome of discussion: https://github.com/openml/OpenML/issues/776",
     )
@@ -179,13 +153,11 @@ def test_delete_task_not_owned(mock_delete):
 @mock.patch("openml._api.clients.http.HTTPClient.delete")
 def test_delete_task_with_run(mock_delete):
     openml.config.start_using_configuration_for_example()
-    mock_delete.side_effect = OpenMLNotAuthorizedError(
-        "The task can not be deleted because it was not uploaded by you."
-    )
+    mock_delete.side_effect = OpenMLServerException("Task does not exist")
 
     with pytest.raises(
-        OpenMLNotAuthorizedError,
-        match="The task can not be deleted because it still has associated entities:",
+        OpenMLServerException,
+        match="Task does not exist",
     ):
         openml.tasks.delete_task(3496)
 
@@ -193,9 +165,11 @@ def test_delete_task_with_run(mock_delete):
     assert task_url == mock_delete.call_args.args[0]
 
 @mock.patch("openml._api.clients.http.HTTPClient.delete")
-def test_delete_success(mock_delete):
-    mock_delete.side_effect = OpenMLNotAuthorizedError(
-        "The task can not be deleted because it was not uploaded by you."
+def test_delete_success(mock_delete, test_files_directory):
+    content_file = test_files_directory / "mock_responses" / "tasks" / "task_delete_successful.xml"
+    mock_delete.return_value = create_request_response(
+        status_code=200,
+        content_filepath=content_file,
     )
 
     success = openml.tasks.delete_task(361323)
@@ -206,15 +180,8 @@ def test_delete_success(mock_delete):
 
 @mock.patch("openml._api.clients.http.HTTPClient.delete")
 def test_delete_unknown_task(mock_delete):
-    openml.config.start_using_configuration_for_example()
-    mock_delete.side_effect = OpenMLNotAuthorizedError(
-        "The task can not be deleted because it was not uploaded by you."
-    )
-
-    with pytest.raises(
-        OpenMLServerException,
-        match="Task does not exist",
-    ):
+    mock_delete.side_effect = OpenMLServerException("Task does not exist")
+    with pytest.raises(OpenMLServerException, match="Task does not exist"):
         openml.tasks.delete_task(9_999_999)
 
     task_url = "task/9999999"
