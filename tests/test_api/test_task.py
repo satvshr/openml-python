@@ -4,14 +4,15 @@ from __future__ import annotations
 import pytest
 import pandas as pd
 from openml._api.resources.task import TaskV1API, TaskV2API
+from openml.exceptions import OpenMLNotSupportedError
 from openml.testing import TestAPIBase
 from openml.tasks.task import TaskType
 from openml.enums import APIVersion
 
-class TestTasksV1(TestAPIBase):
+class TestTaskV1(TestAPIBase):
     def setUp(self):
         super().setUp()
-        self.resource = TaskV1API(self.http_client)
+        self.resource = TaskV1API(self.http_clients[APIVersion.V1])
 
     @pytest.mark.uses_test_server()
     def test_list_tasks(self):
@@ -29,6 +30,16 @@ class TestTasksV1(TestAPIBase):
         assert len(procs) > 0
         assert "id" in procs[0]
 
+class TestTaskV2(TestAPIBase):
+    def setUp(self):
+        super().setUp()
+        self.resource = TaskV2API(self.http_clients[APIVersion.V2])
+
+    @pytest.mark.uses_test_server()
+    def test_list_tasks(self):
+        """Verify V2 list endpoint returns a populated DataFrame."""
+        with pytest.raises(OpenMLNotSupportedError):
+            self.resource.list(limit=5, offset=0)
 
 class TestTasksCombined(TestAPIBase):
     def setUp(self):

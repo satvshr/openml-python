@@ -153,6 +153,12 @@ class TaskV1API(ResourceV1API, TaskAPI):
         -------
         dataframe
         """
+        api_call = self._build_url(limit, offset, task_type, kwargs)
+        return self._parse_list_xml(api_call=api_call)
+
+    def _build_url(
+        self, limit: int, offset: int, task_type: TaskType | int | None, kwargs: dict[str, Any]
+    ) -> str:
         api_call = "task/list"
         if limit is not None:
             api_call += f"/limit/{limit}"
@@ -167,10 +173,9 @@ class TaskV1API(ResourceV1API, TaskAPI):
                     if operator == "task_id":
                         value = ",".join([str(int(i)) for i in value])  # noqa: PLW2901
                     api_call += f"/{operator}/{value}"
+        return api_call
 
-        return self._fetch_tasks_df(api_call=api_call)
-
-    def _fetch_tasks_df(self, api_call: str) -> pd.DataFrame:  # noqa: C901, PLR0912
+    def _parse_list_xml(self, api_call: str) -> pd.DataFrame:  # noqa: C901, PLR0912
         """Returns a Pandas DataFrame with information about OpenML tasks.
 
         Parameters
@@ -330,6 +335,19 @@ class TaskV1API(ResourceV1API, TaskAPI):
 
 class TaskV2API(ResourceV2API, TaskAPI):
     def get(self, task_id: int) -> OpenMLTask:
+        """Download OpenML task for a given task ID.
+
+        Downloads the task representation.
+
+        Parameters
+        ----------
+        task_id : int
+            The OpenML task id of the task to download.
+
+        Returns
+        -------
+        task: OpenMLTask
+        """
         response = self._http.get(f"tasks/{task_id}", use_cache=True)
         return self._create_task_from_json(response.json())
 
