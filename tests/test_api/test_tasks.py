@@ -6,6 +6,7 @@ import pandas as pd
 from openml._api.resources.task import TaskV1API, TaskV2API
 from openml.testing import TestAPIBase
 from openml.tasks.task import TaskType
+from openml.enums import APIVersion
 
 class TestTasksV1(TestAPIBase):
     def setUp(self):
@@ -32,17 +33,8 @@ class TestTasksV1(TestAPIBase):
 class TestTasksCombined(TestAPIBase):
     def setUp(self):
         super().setUp()
-        self.v1_resource = TaskV1API(self.http_client)
-
-        self.v2_client = self._get_http_client(
-            server="http://127.0.0.1:8001/",
-            base_url="",
-            api_key="",
-            timeout_seconds=self.timeout_seconds,
-            retries=self.retries,
-            retry_policy=self.retry_policy,
-        )
-        self.v2_resource = TaskV2API(self.v2_client)
+        self.v1_resource = TaskV1API(self.http_clients[APIVersion.V1])
+        self.v2_resource = TaskV2API(self.http_clients[APIVersion.V2])
 
     def _get_first_tid(self, task_type: TaskType) -> int:
         """Helper to find an existing task ID for a given type using the V1 resource."""
