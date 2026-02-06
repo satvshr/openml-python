@@ -107,6 +107,15 @@ jobs:
         git clone --depth 1 https://github.com/openml/server-api.git server-api
         sed -i 's|\.\./server-api|./server-api|g' docker-compose.yml
 
+    - name: Start Docker Test Environment
+      if: matrix.os == 'ubuntu-latest'
+      shell: bash
+      run: |
+        sed -i 's/\r$//' docker/update.sh
+        docker compose up -d
+        docker wait openml-test-setup-ci
+        echo "OPENML_TEST_SERVER=local" >> $GITHUB_ENV
+
     - name: Show installed dependencies
       run: python -m pip list
 

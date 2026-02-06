@@ -11,6 +11,11 @@ services:
       start_period: 30s
       interval: 5s
       retries: 10
+    networks:
+          default:
+            aliases:
+              - openml-test-database
+              - elasticsearch
 
   database-setup:
     image: mysql
