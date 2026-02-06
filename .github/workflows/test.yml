@@ -154,6 +154,15 @@ jobs:
       run: |  # we need a separate step because of the bash-specific if-statement in the previous one.
         pytest -n 4 --durations=20 --dist load -sv --reruns 5 --reruns-delay 1 -m "not uses_test_server"
 
+    - name: Upload coverage
+      if: matrix.code-cov && always()
+      uses: codecov/codecov-action@v4
+      with:
+        files: coverage.xml
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: true
+        verbose: true
+
     - name: Cleanup Docker setup
       if: always()
       shell: bash
@@ -172,15 +181,6 @@ jobs:
             echo "Not all generated files have been deleted!"
             exit 1
         fi
-
-    - name: Upload coverage
-      if: matrix.code-cov && always()
-      uses: codecov/codecov-action@v4
-      with:
-        files: coverage.xml
-        token: ${{ secrets.CODECOV_TOKEN }}
-        fail_ci_if_error: true
-        verbose: true
 
   dummy_windows_py_sk024:
     name: (windows-latest, Py, sk0.24.*, sk-only:false)
