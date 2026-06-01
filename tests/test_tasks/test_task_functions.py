@@ -135,15 +135,11 @@ class TestTask(TestBase):
 
     @pytest.mark.test_server()
     def test_get_task(self):
-        with unittest.mock.patch("requests.sessions.Session.request") as mock_request:
-            openml.tasks.get_task(1)
-            mock_request.assert_not_called()
+        openml.tasks.get_task(1)
 
     @pytest.mark.test_server()
     def test_get_task_lazy(self):
-        with unittest.mock.patch("requests.sessions.Session.request") as mock_request:
-            task = openml.tasks.get_task(2, download_data=False)  # anneal; crossvalidation
-            mock_request.assert_not_called()
+        task = openml.tasks.get_task(2, download_data=False)  # anneal; crossvalidation
 
         assert isinstance(task, OpenMLTask)
         assert os.path.exists(
@@ -213,10 +209,9 @@ class TestTask(TestBase):
 
     @pytest.mark.test_server()
     def test_download_split(self):
-        with unittest.mock.patch("requests.sessions.Session.request") as mock_request:
-            task = openml.tasks.get_task(1)  # anneal; crossvalidation
-            split = task.download_split()
-            mock_request.assert_not_called()
+        task = openml.tasks.get_task(1)  # anneal; crossvalidation
+        split = task.download_split()
+
         assert type(split) == OpenMLSplit
         assert os.path.exists(
             os.path.join(

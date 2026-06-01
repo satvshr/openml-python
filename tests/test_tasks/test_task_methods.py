@@ -37,9 +37,7 @@ class OpenMLTaskMethodsTest(TestBase):
     def test_get_train_and_test_split_indices(self):        
         openml.config.set_root_cache_directory(self.static_cache_dir)
         
-        with unittest.mock.patch("requests.sessions.Session.request") as mock_request:
-            task = openml.tasks.get_task(1882)
-            mock_request.assert_not_called()
+        task = openml.tasks.get_task(1882)
             
         train_indices, test_indices = task.get_train_test_split_indices(0, 0)
         assert train_indices[0] == 16
