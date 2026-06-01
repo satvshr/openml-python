@@ -184,6 +184,12 @@ def get_task(
     Returns
     -------
     task: OpenMLTask
+
+    Examples
+    --------
+    >>> import openml
+    >>> task = openml.tasks.get_task(1)  # doctest: +SKIP
+    >>> task = openml.tasks.get_task(1, download_splits=True)  # doctest: +SKIP
     """
     if not isinstance(task_id, int):
         raise TypeError(f"Task id should be integer, is {type(task_id)}")
