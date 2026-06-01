@@ -165,7 +165,7 @@ class TestTask(TestBase):
             
         assert os.path.exists(
             os.path.join(
-                openml.config.get_cache_directory(), "tasks", "2", "body.arff"
+                openml.config.get_cache_directory(), "task", "2", "body.arff"
             )
         )
 
@@ -215,7 +215,7 @@ class TestTask(TestBase):
         assert type(split) == OpenMLSplit
         assert os.path.exists(
             os.path.join(
-                openml.config.get_cache_directory(), "tasks", "1", "body.arff"
+                openml.config.get_cache_directory(), "task", "1", "body.arff"
             )
         )
 
