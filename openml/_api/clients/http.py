@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Any, cast
 from urllib.parse import urlencode, urljoin, urlparse
 
-import arff
 import requests
 import xmltodict
 from requests import Response
